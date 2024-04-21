@@ -29,7 +29,7 @@ app.post("/stocks/ajouter", checkAuth, (req, res) => {
 app.get("/stocks/:produitId", checkAuth, (req, res) => {
     const {produitId} = req.params;
 
-    Stock.findOne({ produitId })
+    Stock.findOne({ produitId, quantite: {$gt: 0} })
         .then(stock => {
             if (!stock) {
                 return res.status(404).json({ error: 'Stock non trouvé' });

@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const Commande = require('./Commande')
 const checkAuth = require('./auth')
 const axios = require('axios')
-const res = require("express/lib/response");
 
 app.use(express.json());
 
@@ -31,7 +30,7 @@ app.post("/commandes/ajouter", checkAuth, async (req, res) => {
 
     try {
         const { total, produits} = await getPtoduitsTotal(ids);
-
+        await axios('http://localhost:3003/stock/')
         const commande = new Commande({
             produits: [...produits],
             email_utilisateur: email_utilisateur,
@@ -47,8 +46,13 @@ app.post("/commandes/ajouter", checkAuth, async (req, res) => {
     }
 })
 
-app.post('commandes/annuler',checkAuth, (req,res) => {
+app.delete('commandes/annuler',checkAuth,async (req,res) => {
+    const {commandId} = req.body
 
+    await Commande.deleteOne({
+        _id: commandId
+    })
+    res.status(204)
 })
 
 app.listen(port, console.log('Server is running'))
